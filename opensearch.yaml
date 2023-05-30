@@ -26,28 +26,28 @@ spec:
           ports:
             - containerPort: 9200
 
-# ---
+---
 
-# apiVersion: apps/v1
-# kind: Deployment
-# metadata:
-#   name: opensearch-dashboards
-#   namespace: opensearch
-# spec:
-#   replicas: 1
-#   selector:
-#     matchLabels:
-#       app: opensearch-dashboards
-#   template:
-#     metadata:
-#       labels:
-#         app: opensearch-dashboards
-#     spec:
-#       containers:
-#         - name: opensearch-dashboards
-#           image: opensearchproject/opensearch-dashboards:1.0.0
-#           ports:
-#             - containerPort: 5601
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: opensearch-dashboards
+  namespace: opensearch
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: opensearch-dashboards
+  template:
+    metadata:
+      labels:
+        app: opensearch-dashboards
+    spec:
+      containers:
+        - name: opensearch-dashboards
+          image: opensearchproject/opensearch-dashboards:2.7.0
+          ports:
+            - containerPort: 5601
 
 # ---
 
