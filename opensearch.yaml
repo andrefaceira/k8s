@@ -102,3 +102,18 @@ spec:
     #   name: opensearch-dashboards
   selector:
     app: opensearch
+
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: opensearch-dashboards-lb
+  namespace: opensearch
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 5601
+      targetPort: 5601
+  selector:
+    app: opensearch-dashboards
