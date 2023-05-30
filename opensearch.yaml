@@ -3,28 +3,28 @@ kind: Namespace
 metadata:
   name: opensearch
 
-# ---
+---
 
-# apiVersion: apps/v1
-# kind: Deployment
-# metadata:
-#   name: opensearch
-#   namespace: opensearch
-# spec:
-#   replicas: 1
-#   selector:
-#     matchLabels:
-#       app: opensearch
-#   template:
-#     metadata:
-#       labels:
-#         app: opensearch
-#     spec:
-#       containers:
-#         - name: opensearch
-#           image: opensearchproject/opensearch:1.0.0
-#           ports:
-#             - containerPort: 9200
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: opensearch
+  namespace: opensearch
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: opensearch
+  template:
+    metadata:
+      labels:
+        app: opensearch
+    spec:
+      containers:
+        - name: opensearch
+          image: opensearchproject/opensearch:2.7.0
+          ports:
+            - containerPort: 9200
 
 # ---
 
