@@ -82,23 +82,23 @@ spec:
       port: 5601
       targetPort: 5601
 
-# ---
+---
 
-# apiVersion: v1
-# kind: Service
-# metadata:
-#   name: opensearch-lb
-#   namespace: opensearch
-# spec:
-#   type: LoadBalancer
-#   ports:
-#     - port: 9200
-#       targetPort: 9200
-#       protocol: TCP
-#       name: opensearch
-#     - port: 5601
-#       targetPort: 5601
-#       protocol: TCP
-#       name: opensearch-dashboards
-#   selector:
-#     app: opensearch
+apiVersion: v1
+kind: Service
+metadata:
+  name: opensearch-lb
+  namespace: opensearch
+spec:
+  type: LoadBalancer
+  ports:
+    - port: 9200
+      targetPort: 9200
+      # protocol: TCP
+      # name: opensearch
+    # - port: 5601
+    #   targetPort: 5601
+    #   protocol: TCP
+    #   name: opensearch-dashboards
+  selector:
+    app: opensearch
