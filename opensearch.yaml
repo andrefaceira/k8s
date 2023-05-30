@@ -1,71 +1,71 @@
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: opensearch
+# apiVersion: v1
+# kind: Namespace
+# metadata:
+#   name: opensearch
 
----
+# ---
 
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: opensearch
-  namespace: opensearch
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: opensearch
-  template:
-    metadata:
-      labels:
-        app: opensearch
-    spec:
-      containers:
-        - name: opensearch
-          image: opensearchproject/opensearch:1.0.0
-          ports:
-            - containerPort: 9200
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: opensearch
+#   namespace: opensearch
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: opensearch
+#   template:
+#     metadata:
+#       labels:
+#         app: opensearch
+#     spec:
+#       containers:
+#         - name: opensearch
+#           image: opensearchproject/opensearch:1.0.0
+#           ports:
+#             - containerPort: 9200
 
----
+# ---
 
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: opensearch-dashboards
-  namespace: opensearch
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: opensearch-dashboards
-  template:
-    metadata:
-      labels:
-        app: opensearch-dashboards
-    spec:
-      containers:
-        - name: opensearch-dashboards
-          image: opensearchproject/opensearch-dashboards:1.0.0
-          ports:
-            - containerPort: 5601
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: opensearch-dashboards
+#   namespace: opensearch
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: opensearch-dashboards
+#   template:
+#     metadata:
+#       labels:
+#         app: opensearch-dashboards
+#     spec:
+#       containers:
+#         - name: opensearch-dashboards
+#           image: opensearchproject/opensearch-dashboards:1.0.0
+#           ports:
+#             - containerPort: 5601
 
----
+# ---
 
-apiVersion: v1
-kind: Service
-metadata:
-  name: opensearch-lb
-  namespace: opensearch
-spec:
-  type: LoadBalancer
-  ports:
-    - port: 9200
-      targetPort: 9200
-      protocol: TCP
-      name: opensearch
-    - port: 5601
-      targetPort: 5601
-      protocol: TCP
-      name: opensearch-dashboards
-  selector:
-    app: opensearch
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: opensearch-lb
+#   namespace: opensearch
+# spec:
+#   type: LoadBalancer
+#   ports:
+#     - port: 9200
+#       targetPort: 9200
+#       protocol: TCP
+#       name: opensearch
+#     - port: 5601
+#       targetPort: 5601
+#       protocol: TCP
+#       name: opensearch-dashboards
+#   selector:
+#     app: opensearch
