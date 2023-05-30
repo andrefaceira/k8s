@@ -3,11 +3,9 @@ kind: Ingress
 metadata:
   name: opensearch-ingress
   namespace: opensearch
-  annotations:
-    nginx.ingress.kubernetes.io/use-regex: "true"
 spec:
   rules:
-    - host: "192.168.0.100"
+    - host: 139.59.206.20
       http:
         paths:
           - path: /
