@@ -1,7 +1,7 @@
-# apiVersion: v1
-# kind: Namespace
-# metadata:
-#   name: opensearch
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: opensearch
 
 # ---
 
