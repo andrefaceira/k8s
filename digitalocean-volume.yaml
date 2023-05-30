@@ -15,7 +15,7 @@ spec:
     matchLabels:
       app: mypod
   serviceName: "my-frontend"
-  replicas: 1
+  replicas: 2
   template:
     metadata:
       labels:
@@ -29,10 +29,10 @@ spec:
         - infinity
         volumeMounts:
         - mountPath: "/data"
-          name: csi-pvc
+          name: volume-10g-01-pvc
   volumeClaimTemplates:
   - metadata:
-      name: csi-pvc
+      name: volume-10g-01-pvc
     spec:
       accessModes:
       - ReadWriteOnce
