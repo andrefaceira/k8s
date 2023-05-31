@@ -17,8 +17,10 @@ spec:
   ports:
     - port: 9200
       targetPort: 9200
+      name: http
     - port: 9300
       targetPort: 9300
+      name: transport
 
 ---
 
@@ -54,6 +56,11 @@ spec:
               memory: 2Gi
             requests:
               memory: 2Gi
+          env:
+            - name: cluster.name
+              value: opensearch-cluster
+            - name: discovery.type
+              value: single-node
   volumeClaimTemplates:
     - metadata:
         name: opensearch-data
