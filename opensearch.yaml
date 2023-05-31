@@ -17,6 +17,8 @@ spec:
   ports:
     - port: 9200
       targetPort: 9200
+    - port: 9300
+      targetPort: 9300
 
 ---
 
@@ -38,10 +40,12 @@ spec:
     spec:
       containers:
         - name: opensearch
-          image: opensearchproject/opensearch:1.0.0
+          image: opensearchproject/opensearch:2.7.0
           ports:
             - containerPort: 9200
               name: http
+            - containerPort: 9300
+              name: transport
           volumeMounts:
             - name: opensearch-data
               mountPath: /usr/share/opensearch/data
@@ -115,7 +119,7 @@ spec:
     spec:
       containers:
         - name: opensearch-dashboards
-          image: opensearchproject/opensearch-dashboards:1.0.0
+          image: opensearchproject/opensearch-dashboards:2.7.0
           ports:
             - containerPort: 5601
           env:
