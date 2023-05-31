@@ -69,7 +69,6 @@ metadata:
   namespace: opensearch
   annotations:
     kubernetes.io/ingress.class: nginx
-    nginx.ingress.kubernetes.io/rewrite-target: /
 spec:
   rules:
     - host: opensearch.faceira.me
@@ -144,3 +143,5 @@ spec:
                 name: opensearch-dashboards
                 port:
                   number: 5601
+
+---
