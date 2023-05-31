@@ -39,6 +39,23 @@ spec:
             - name: discovery.type
               value: single-node
               
+---
+
+apiVersion: v1
+kind: Service
+metadata:
+  name: opensearch
+  namespace: opensearch
+spec:
+  ports:
+    - name: http
+      port: 9200
+      targetPort: 9200
+  selector:
+    app: opensearch
+
+
+    
             # - name: node.name
             #   valueFrom:
             #     fieldRef:
