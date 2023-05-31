@@ -1,141 +1,141 @@
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: opensearch
-
----
-
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: opensearch
-  namespace: opensearch
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: opensearch
-  template:
-    metadata:
-      labels:
-        app: opensearch
-    spec:
-      containers:
-        - name: opensearch
-          image: opensearchproject/opensearch:latest
-          ports:
-            - containerPort: 9200
-          env:
-            - name: discovery.type
-              value: single-node
-
----
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: opensearch
-  namespace: opensearch
-spec:
-  selector:
-    app: opensearch
-  ports:
-    - name: http
-      port: 9200
-      targetPort: 9200
-
----
-
-apiVersion: apps/v1
-kind: Deployment
-metadata:
-  name: opensearch-dashboards
-  namespace: opensearch
-spec:
-  replicas: 1
-  selector:
-    matchLabels:
-      app: opensearch-dashboards
-  template:
-    metadata:
-      labels:
-        app: opensearch-dashboards
-    spec:
-      containers:
-        - name: opensearch-dashboards
-          image: opensearchproject/opensearch-dashboards:latest
-          ports:
-            - containerPort: 5601
-
----
-
-apiVersion: v1
-kind: Service
-metadata:
-  name: opensearch-dashboards-service
-  namespace: opensearch
-spec:
-  selector:
-    app: opensearch-dashboards
-  ports:
-    - name: http
-      port: 5601
-      targetPort: 5601
-
----
-
-apiVersion: networking.k8s.io/v1
-kind: Ingress
-metadata:
-  name: opensearch-dashboards-ingress
-  namespace: opensearch
-  annotations:
-    kubernetes.io/ingress.class: "nginx"
-spec:
-  rules:
-    - host: opensearch.faceira.me
-      http:
-        paths:
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: opensearch-dashboards-service
-                port:
-                  number: 5601
-
----
-
 # apiVersion: v1
-# kind: Service
+# kind: Namespace
 # metadata:
-#   name: opensearch-lb
+#   name: opensearch
+
+# ---
+
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: opensearch
 #   namespace: opensearch
 # spec:
-#   type: LoadBalancer
-#   ports:
-#     - port: 9200
-#       targetPort: 9200
-#       # protocol: TCP
-#       # name: opensearch
-#     # - port: 5601
-#     #   targetPort: 5601
-#     #   protocol: TCP
-#     #   name: opensearch-dashboards
+#   replicas: 1
 #   selector:
-#     app: opensearch
+#     matchLabels:
+#       app: opensearch
+#   template:
+#     metadata:
+#       labels:
+#         app: opensearch
+#     spec:
+#       containers:
+#         - name: opensearch
+#           image: opensearchproject/opensearch:latest
+#           ports:
+#             - containerPort: 9200
+#           env:
+#             - name: discovery.type
+#               value: single-node
 
 # ---
 
 # apiVersion: v1
 # kind: Service
 # metadata:
-#   name: opensearch-dashboards-lb
+#   name: opensearch
 #   namespace: opensearch
 # spec:
-#   type: LoadBalancer
+#   selector:
+#     app: opensearch
 #   ports:
-#     - port: 5601
-#       targetPort: 5601
+#     - name: http
+#       port: 9200
+#       targetPort: 9200
+
+# ---
+
+# apiVersion: apps/v1
+# kind: Deployment
+# metadata:
+#   name: opensearch-dashboards
+#   namespace: opensearch
+# spec:
+#   replicas: 1
+#   selector:
+#     matchLabels:
+#       app: opensearch-dashboards
+#   template:
+#     metadata:
+#       labels:
+#         app: opensearch-dashboards
+#     spec:
+#       containers:
+#         - name: opensearch-dashboards
+#           image: opensearchproject/opensearch-dashboards:latest
+#           ports:
+#             - containerPort: 5601
+
+# ---
+
+# apiVersion: v1
+# kind: Service
+# metadata:
+#   name: opensearch-dashboards-service
+#   namespace: opensearch
+# spec:
 #   selector:
 #     app: opensearch-dashboards
+#   ports:
+#     - name: http
+#       port: 5601
+#       targetPort: 5601
+
+# ---
+
+# apiVersion: networking.k8s.io/v1
+# kind: Ingress
+# metadata:
+#   name: opensearch-dashboards-ingress
+#   namespace: opensearch
+#   annotations:
+#     kubernetes.io/ingress.class: "nginx"
+# spec:
+#   rules:
+#     - host: opensearch.faceira.me
+#       http:
+#         paths:
+#           - path: /
+#             pathType: Prefix
+#             backend:
+#               service:
+#                 name: opensearch-dashboards-service
+#                 port:
+#                   number: 5601
+
+# ---
+
+# # apiVersion: v1
+# # kind: Service
+# # metadata:
+# #   name: opensearch-lb
+# #   namespace: opensearch
+# # spec:
+# #   type: LoadBalancer
+# #   ports:
+# #     - port: 9200
+# #       targetPort: 9200
+# #       # protocol: TCP
+# #       # name: opensearch
+# #     # - port: 5601
+# #     #   targetPort: 5601
+# #     #   protocol: TCP
+# #     #   name: opensearch-dashboards
+# #   selector:
+# #     app: opensearch
+
+# # ---
+
+# # apiVersion: v1
+# # kind: Service
+# # metadata:
+# #   name: opensearch-dashboards-lb
+# #   namespace: opensearch
+# # spec:
+# #   type: LoadBalancer
+# #   ports:
+# #     - port: 5601
+# #       targetPort: 5601
+# #   selector:
+# #     app: opensearch-dashboards
