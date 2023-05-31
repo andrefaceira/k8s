@@ -80,7 +80,8 @@ spec:
           resources:
             limits:
               memory: 1Gi
-              requests memory: 1Gi
+            requests: 
+              memory: 1Gi
           env:
             - name: OPENSEARCH_HOSTS
               value: "http://opensearch:9200"
