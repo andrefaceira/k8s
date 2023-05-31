@@ -9,7 +9,7 @@ metadata:
 spec:
   ingressClassName: "nginx"
   rules:
-  - host: argo.example.com
+  - host: argo.faceira.me
     http:
       paths:
       - path: /
