@@ -35,14 +35,18 @@ kubectl get services
 
 # opensearch
 
+
+## install generating an yaml 
 helm repo add opensearch https://opensearch-project.github.io/helm-charts/
 helm template . > solved.yaml
 
+## verify it works
 kubectl -n opensearch exec -it opensearch-cluster-master-0 -- /bin/bash
+curl -XGET https://localhost:9200 -u 'admin:admin' --insecure
 
+## run
+kubectl port-forward opensearch/opensearch-dashboards-574f4fd977-vnhdt 5601
 kubectl port-forward -n opensearch opensearch-0 9200:9200
-
-kubectl port-forward -n opensearch opensearch-dashboards-7b754c98bf-ddclc  5601:5601
 
 # metrics server
 
