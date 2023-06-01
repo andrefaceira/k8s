@@ -11,6 +11,7 @@ apiVersion: policy/v1
 kind: PodDisruptionBudget
 metadata:
   name: "opensearch-cluster-master-pdb"
+  namespace: opensearch
   labels:
     helm.sh/chart: opensearch-2.12.2
     app.kubernetes.io/name: opensearch
@@ -31,6 +32,7 @@ apiVersion: v1
 kind: ConfigMap
 metadata:
   name: opensearch-cluster-master-config
+  namespace: opensearch
   labels:
     helm.sh/chart: opensearch-2.12.2
     app.kubernetes.io/name: opensearch
@@ -97,6 +99,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: opensearch-cluster-master
+  namespace: opensearch
   labels:
     helm.sh/chart: opensearch-2.12.2
     app.kubernetes.io/name: opensearch
@@ -125,6 +128,7 @@ kind: Service
 apiVersion: v1
 metadata:
   name: opensearch-cluster-master-headless
+  namespace: opensearch
   labels:
     helm.sh/chart: opensearch-2.12.2
     app.kubernetes.io/name: opensearch
@@ -154,6 +158,7 @@ apiVersion: apps/v1
 kind: StatefulSet
 metadata:
   name: opensearch-cluster-master
+  namespace: opensearch
   labels:
     helm.sh/chart: opensearch-2.12.2
     app.kubernetes.io/name: opensearch
@@ -302,6 +307,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: opensearch-cluster-master
+  namespace: opensearch
   labels:
     helm.sh/chart: opensearch-2.12.2
     app.kubernetes.io/name: opensearch
