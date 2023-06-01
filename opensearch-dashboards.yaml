@@ -38,6 +38,7 @@ apiVersion: v1
 kind: Service
 metadata:
   name: opensearch-dashboards
+  namespace: opensearch
   labels:
     helm.sh/chart: opensearch-dashboards-2.10.0
     app.kubernetes.io/name: opensearch-dashboards
@@ -60,6 +61,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: opensearch-dashboards
+  namespace: opensearch
   labels:
     helm.sh/chart: opensearch-dashboards-2.10.0
     app.kubernetes.io/name: opensearch-dashboards
@@ -142,6 +144,7 @@ apiVersion: networking.k8s.io/v1
 kind: Ingress
 metadata:
   name: release-name-opensearch-dashboards
+  namespace: opensearch
   labels:
     helm.sh/chart: opensearch-dashboards-2.10.0
     app.kubernetes.io/name: opensearch-dashboards
