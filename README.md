@@ -13,8 +13,7 @@
 
 
 
-
-
+helm template . > solved.yaml
 
 
 
