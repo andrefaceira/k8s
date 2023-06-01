@@ -1,10 +1,29 @@
 
-# apiVersion: v1
-# kind: Namespace
-# metadata:
-#   name: opensearch
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: opensearch
 
-# ---
+
+---
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: opensearch
+spec:
+  destination:
+    namespace: opensearch
+    server: https://3763d097-d7e4-4354-9907-b03749694878.k8s.ondigitalocean.com
+  source:
+    repoURL: https://opensearch-project.github.io/helm-charts/
+    targetRevision: main
+    helm:
+      valueFiles:
+        - values.yaml
+      releaseName: my-deployment
+      chart: opensearch/opensearch
+  project: default
+
 
 # apiVersion: v1
 # kind: Service
