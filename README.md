@@ -11,11 +11,29 @@
 - install nginx via yaml
 - manage DigitalOcean with terraform
 
+
+
+
+
+
+
+
 # k8s
 
 kubectl -n argocd get secret argocd-initial-admin-secret -o jsonpath="{.data.password}" | base64 -d; echo
 
 kubectl port-forward svc/argocd-server -n argocd 8080:443
+
+https://github.com/andrefaceira/k8s
+
+# nginx
+
+helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
+helm repo update
+helm install nginx-ingress ingress-nginx/ingress-nginx --set controller.publishService.enabled=true
+
+kubectl get services
+
 
 # opensearch
 
@@ -26,14 +44,6 @@ helm search repo opensearch
 kubectl port-forward -n opensearch opensearch-0 9200:9200
 
 kubectl port-forward -n opensearch opensearch-dashboards-7b754c98bf-ddclc  5601:5601
-
-# nginx
-
-helm repo add ingress-nginx https://kubernetes.github.io/ingress-nginx
-helm repo update
-helm install nginx-ingress ingress-nginx/ingress-nginx --set controller.publishService.enabled=true
-
-kubectl get services
 
 # metrics server
 
