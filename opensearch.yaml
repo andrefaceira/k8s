@@ -1,3 +1,4 @@
+---
 
 apiVersion: v1
 kind: Namespace
@@ -6,173 +7,321 @@ metadata:
 
 ---
 
-# apiVersion: argoproj.io/v1alpha1
-# kind: Application
-# metadata:
-#   name: opensearch
-#   namespace: opensearch
-# spec:
-#   destination:
-#     namespace: opensearch
-#     server: https://3763d097-d7e4-4354-9907-b03749694878.k8s.ondigitalocean.com
-#   source:
-#     repoURL: https://opensearch-project.github.io/helm-charts/
-#     targetRevision: main
-#     helm:
-#       valueFiles:
-#         - values.yaml
-#       releaseName: my-deployment
-#       chart: opensearch/opensearch
-#   project: default
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: "opensearch-cluster-master-pdb"
+  labels:
+    helm.sh/chart: opensearch-2.12.2
+    app.kubernetes.io/name: opensearch
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "2.7.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: opensearch-cluster-master
+spec:
+  maxUnavailable: 1
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: opensearch
+      app.kubernetes.io/instance: release-name
 
+---
 
-# apiVersion: v1
-# kind: Service
-# metadata:
-#   name: opensearch
-#   namespace: opensearch
-# spec:
-#   selector:
-#     app: opensearch
-#   ports:
-#     - port: 9200
-#       targetPort: 9200
-#       name: http
-#     # - port: 9300
-#     #   targetPort: 9300
-#     #   name: transport
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: opensearch-cluster-master-config
+  labels:
+    helm.sh/chart: opensearch-2.12.2
+    app.kubernetes.io/name: opensearch
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "2.7.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: opensearch-cluster-master
+data:
+  opensearch.yml: |
+    cluster.name: opensearch-cluster
+    
+    # Bind to all interfaces because we don't know what IP address Docker will assign to us.
+    network.host: 0.0.0.0
+    
+    # Setting network.host to a non-loopback address enables the annoying bootstrap checks. "Single-node" mode disables them again.
+    # Implicitly done if ".singleNode" is set to "true".
+    # discovery.type: single-node
+    
+    # Start OpenSearch Security Demo Configuration
+    # WARNING: revise all the lines below before you go into production
+    plugins:
+      security:
+        ssl:
+          transport:
+            pemcert_filepath: esnode.pem
+            pemkey_filepath: esnode-key.pem
+            pemtrustedcas_filepath: root-ca.pem
+            enforce_hostname_verification: false
+          http:
+            enabled: true
+            pemcert_filepath: esnode.pem
+            pemkey_filepath: esnode-key.pem
+            pemtrustedcas_filepath: root-ca.pem
+        allow_unsafe_democertificates: true
+        allow_default_init_securityindex: true
+        authcz:
+          admin_dn:
+            - CN=kirk,OU=client,O=client,L=test,C=de
+        audit.type: internal_opensearch
+        enable_snapshot_restore_privilege: true
+        check_snapshot_restore_write_privileges: true
+        restapi:
+          roles_enabled: ["all_access", "security_rest_api_access"]
+        system_indices:
+          enabled: true
+          indices:
+            [
+              ".opendistro-alerting-config",
+              ".opendistro-alerting-alert*",
+              ".opendistro-anomaly-results*",
+              ".opendistro-anomaly-detector*",
+              ".opendistro-anomaly-checkpoints",
+              ".opendistro-anomaly-detection-state",
+              ".opendistro-reports-*",
+              ".opendistro-notifications-*",
+              ".opendistro-notebooks",
+              ".opendistro-asynchronous-search-response*",
+            ]
+    ######## End OpenSearch Security Demo Configuration ########
 
-# ---
+---
 
-# apiVersion: apps/v1
-# kind: StatefulSet
-# metadata:
-#   name: opensearch
-#   namespace: opensearch
-# spec:
-#   serviceName: opensearch
-#   replicas: 1
-#   selector:
-#     matchLabels:
-#       app: opensearch
-#   template:
-#     metadata:
-#       labels:
-#         app: opensearch
-#     spec:
-#       containers:
-#         - name: opensearch
-#           image: opensearchproject/opensearch:1.0.0
-#           ports:
-#             - containerPort: 9200
-#               name: http
-#             # - containerPort: 9300
-#             #   name: transport
-#           volumeMounts:
-#             - name: opensearch-data
-#               mountPath: /usr/share/opensearch/data
-#           resources:
-#             limits:
-#               memory: 2Gi
-#             requests:
-#               memory: 2Gi
-#           env:
-#             - name: cluster.name
-#               value: opensearch-cluster
-#             - name: discovery.type
-#               value: single-node
-#   volumeClaimTemplates:
-#     - metadata:
-#         name: opensearch-data
-#       spec:
-#         accessModes:
-#           - ReadWriteOnce
-#         resources:
-#           requests:
-#             storage: 5Gi
-            
-# ---
+kind: Service
+apiVersion: v1
+metadata:
+  name: opensearch-cluster-master
+  labels:
+    helm.sh/chart: opensearch-2.12.2
+    app.kubernetes.io/name: opensearch
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "2.7.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: opensearch-cluster-master
+  annotations:
+    {}
+spec:
+  type: ClusterIP
+  selector:
+    app.kubernetes.io/name: opensearch
+    app.kubernetes.io/instance: release-name
+  ports:
+  - name: http
+    protocol: TCP
+    port: 9200
+  - name: transport
+    protocol: TCP
+    port: 9300
 
-# apiVersion: networking.k8s.io/v1
-# kind: Ingress
-# metadata:
-#   name: opensearch
-#   namespace: opensearch
-#   annotations:
-#     kubernetes.io/ingress.class: nginx
-# spec:
-#   rules:
-#     - host: opensearch.faceira.me
-#       http:
-#         paths:
-#           - path: /
-#             pathType: Prefix
-#             backend:
-#               service:
-#                 name: opensearch
-#                 port:
-#                   number: 9200
-            
-# ---
+---
 
-# apiVersion: v1
-# kind: Service
-# metadata:
-#   name: opensearch-dashboards
-#   namespace: opensearch
-# spec:
-#   selector:
-#     app: opensearch-dashboards
-#   ports:
-#     - port: 5601
-#       targetPort: 5601
+kind: Service
+apiVersion: v1
+metadata:
+  name: opensearch-cluster-master-headless
+  labels:
+    helm.sh/chart: opensearch-2.12.2
+    app.kubernetes.io/name: opensearch
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "2.7.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: opensearch-cluster-master
+  annotations:
+    service.alpha.kubernetes.io/tolerate-unready-endpoints: "true"
+spec:
+  clusterIP: None 
+  publishNotReadyAddresses: true
+  selector:
+    app.kubernetes.io/name: opensearch
+    app.kubernetes.io/instance: release-name
+  ports:
+  - name: http
+    port: 9200
+  - name: transport
+    port: 9300
+  - name: metrics
+    port: 9600
 
-# ---
+---
 
-# apiVersion: apps/v1
-# kind: Deployment
-# metadata:
-#   name: opensearch-dashboards
-#   namespace: opensearch
-# spec:
-#   replicas: 1
-#   selector:
-#     matchLabels:
-#       app: opensearch-dashboards
-#   template:
-#     metadata:
-#       labels:
-#         app: opensearch-dashboards
-#     spec:
-#       containers:
-#         - name: opensearch-dashboards
-#           image: opensearchproject/opensearch-dashboards:1.0.0
-#           ports:
-#             - containerPort: 5601
-#           env:
-#             - name: ELASTICSEARCH_URL
-#               value: http://opensearch:9200
-              
-# ---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: opensearch-cluster-master
+  labels:
+    helm.sh/chart: opensearch-2.12.2
+    app.kubernetes.io/name: opensearch
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "2.7.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: opensearch-cluster-master
+  annotations:
+    majorVersion: "2"
+spec:
+  serviceName: opensearch-cluster-master-headless
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: opensearch
+      app.kubernetes.io/instance: release-name
+  replicas: 1
+  podManagementPolicy: Parallel
+  updateStrategy:
+    type: RollingUpdate
+  volumeClaimTemplates:
+  - metadata:
+      name: opensearch-cluster-master
+    spec:
+      accessModes:
+      - "ReadWriteOnce"
+      resources:
+        requests:
+          storage: "5Gi"
+  template:
+    metadata:
+      name: "opensearch-cluster-master"
+      labels:
+        helm.sh/chart: opensearch-2.12.2
+        app.kubernetes.io/name: opensearch
+        app.kubernetes.io/instance: release-name
+        app.kubernetes.io/version: "2.7.0"
+        app.kubernetes.io/managed-by: Helm
+        app.kubernetes.io/component: opensearch-cluster-master
+      annotations:
+        configchecksum: 1e4b0fd5f3fdde96947970fc2f66e0985e1cc4ad64e60509e13c763cea73280
+    spec:
+      securityContext:
+        fsGroup: 1000
+        runAsUser: 1000
+      automountServiceAccountToken: false
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+          - weight: 1
+            podAffinityTerm:
+              topologyKey: kubernetes.io/hostname
+              labelSelector:
+                matchExpressions:
+                - key: app.kubernetes.io/instance
+                  operator: In
+                  values:
+                  - release-name
+                - key: app.kubernetes.io/name
+                  operator: In
+                  values:
+                  - opensearch
+      terminationGracePeriodSeconds: 120
+      volumes:
+      - name: config
+        configMap:
+          name: opensearch-cluster-master-config
+      enableServiceLinks: true
+      initContainers:
+      - name: fsgroup-volume
+        image: "busybox:latest"
+        imagePullPolicy: "IfNotPresent"
+        command: ['sh', '-c']
+        args:
+          - 'chown -R 1000:1000 /usr/share/opensearch/data'
+        securityContext:
+          runAsUser: 0
+        resources:
+          {}
 
-# apiVersion: networking.k8s.io/v1
-# kind: Ingress
-# metadata:
-#   name: opensearch-dashboards-ingress
-#   namespace: opensearch
-#   annotations:
-#     kubernetes.io/ingress.class: nginx
-# spec:
-#   rules:
-#     - host: opensearch-dashboards.example.com
-#       http:
-#         paths:
-#           - pathType: Prefix
-#             path: /
-#             backend:
-#               service:
-#                 name: opensearch-dashboards
-#                 port:
-#                   number: 5601
+        volumeMounts:
+          - name: "opensearch-cluster-master"
+            mountPath: /usr/share/opensearch/data
 
-# ---
+      containers:
+      - name: "opensearch"
+        securityContext:
+          capabilities:
+            drop:
+            - ALL
+          runAsNonRoot: true
+          runAsUser: 1000
+
+        image: "opensearchproject/opensearch:2.7.0"
+        imagePullPolicy: "IfNotPresent"
+        readinessProbe:
+          failureThreshold: 3
+          periodSeconds: 5
+          tcpSocket:
+            port: 9200
+          timeoutSeconds: 3
+        startupProbe:
+          failureThreshold: 30
+          initialDelaySeconds: 5
+          periodSeconds: 10
+          tcpSocket:
+            port: 9200
+          timeoutSeconds: 3
+        ports:
+        - name: http
+          containerPort: 9200
+        - name: transport
+          containerPort: 9300
+        - name: metrics
+          containerPort: 9600
+        resources:
+          requests:
+            cpu: 1000m
+            memory: 100Mi
+        env:
+        - name: node.name
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: discovery.seed_hosts
+          value: "opensearch-cluster-master-headless"
+        - name: cluster.name
+          value: "opensearch-cluster"
+        - name: network.host
+          value: "0.0.0.0"
+        - name: OPENSEARCH_JAVA_OPTS
+          value: "-Xmx512M -Xms512M"
+        - name: node.roles
+          value: "master,ingest,data,remote_cluster_client,"
+        - name: discovery.type
+          value: "single-node"
+        volumeMounts:
+        - name: "opensearch-cluster-master"
+          mountPath: /usr/share/opensearch/data
+        - name: config
+          mountPath: /usr/share/opensearch/config/opensearch.yml
+          subPath: opensearch.yml
+
+---
+
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: opensearch-cluster-master
+  labels:
+    helm.sh/chart: opensearch-2.12.2
+    app.kubernetes.io/name: opensearch
+    app.kubernetes.io/instance: release-name
+    app.kubernetes.io/version: "2.7.0"
+    app.kubernetes.io/managed-by: Helm
+    app.kubernetes.io/component: opensearch-cluster-master
+  annotations:
+    kubernetes.io/ingress.class: nginx
+spec:
+  rules:
+    - host: "opensearch.faceira.me"
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: opensearch-cluster-master
+                port:
+                  number: 9200
+
+---
