@@ -13,7 +13,6 @@
 
 
 
-helm template . > solved.yaml
 
 
 
@@ -37,8 +36,9 @@ kubectl get services
 # opensearch
 
 helm repo add opensearch https://opensearch-project.github.io/helm-charts/
-helm repo update
-helm search repo opensearch
+helm template . > solved.yaml
+
+kubectl -n opensearch exec -it opensearch-cluster-master-0 -- /bin/bash
 
 kubectl port-forward -n opensearch opensearch-0 9200:9200
 
