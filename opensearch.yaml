@@ -4,12 +4,13 @@ kind: Namespace
 metadata:
   name: opensearch
 
-
 ---
+
 apiVersion: argoproj.io/v1alpha1
 kind: Application
 metadata:
   name: opensearch
+  namespace: opensearch
 spec:
   destination:
     namespace: opensearch
