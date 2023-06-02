@@ -1,20 +1,4 @@
 
-# TODO
-- opensearch, opensearch dashboards
-    - https://opensearch.org/docs/latest/install-and-configure/install-opensearch/helm/
-    - https://github.com/opensearch-project/helm-charts/blob/main/charts/opensearch/values.yaml
-- metrics server, prometheus operator, grafana
-- nats
-    - https://github.com/nats-io/k8s/tree/main/helm/charts/nack
-    - https://github.com/nats-io/nats.net
-    
-- install nginx via yaml
-- manage DigitalOcean with terraform
-
-
-
-
-
 
 # k8s
 
@@ -48,6 +32,3 @@ curl -XGET https://localhost:9200 -u 'admin:admin' --insecure
 kubectl port-forward opensearch/opensearch-dashboards-574f4fd977-vnhdt 5601
 kubectl port-forward -n opensearch opensearch-0 9200:9200
 
-# metrics server
-
-kubectl apply -f https://github.com/kubernetes-sigs/metrics-server/releases/latest/download/components.yaml
